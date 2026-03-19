@@ -8,94 +8,43 @@
     body { font-family: Arial, sans-serif; padding: 20px; }
     input { padding: 8px; width: 400px; margin-right: 10px; }
     button { padding: 8px 12px; }
-    table { margin-top: 20px; width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f4f4f4; }
+    #status { margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
   <h1>Employee Tracker</h1>
 
-  <!-- Single input for all employee info -->
   <form id="employee-form">
-    <input type="text" id="employeeData" placeholder="Paste employee info: Name, Address, State, SSN" required>
+    <input type="text" id="employeeData" placeholder="Paste info: Name, Address, State, SSN" required>
     <button type="submit">Add Employee</button>
   </form>
 
-  <button id="download-csv">Download Excel</button>
-
-  <table id="employee-table">
-    <thead>
-      <tr>
-        <th>Full Name</th>
-        <th>Address</th>
-        <th>State</th>
-        <th>SSN</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="status"></div>
 
   <script>
     const form = document.getElementById('employee-form');
-    const employeeInput = document.getElementById('employeeData');
-    const tableBody = document.querySelector('#employee-table tbody');
-    const downloadBtn = document.getElementById('download-csv');
+    const input = document.getElementById('employeeData');
+    const status = document.getElementById('status');
 
-    let employees = [];
-
-    // Add employee
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', function(e){
       e.preventDefault();
-      const data = employeeInput.value.trim().split(','); // split by comma
-      if (data.length !== 4) {
-        alert('Please enter all 4 fields: Name, Address, State, SSN');
-        return;
-      }
+      const data = input.value.trim();
+      if(!data) return;
 
-      const employee = {
-        name: data[0].trim(),
-        address: data[1].trim(),
-        state: data[2].trim(),
-        ssn: data[3].trim()
-      };
-
-      employees.push(employee);
-      addRow(employee);
-      employeeInput.value = '';
-    });
-
-    // Add a row to the table
-    function addRow(emp) {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${emp.name}</td>
-        <td>${emp.address}</td>
-        <td>${emp.state}</td>
-        <td>${emp.ssn}</td>
-      `;
-      tableBody.appendChild(row);
-    }
-
-    // Download as CSV (Excel-compatible)
-    downloadBtn.addEventListener('click', () => {
-      if (employees.length === 0) {
-        alert('No employee data to download!');
-        return;
-      }
-
-      let csv = 'Full Name,Address,State,SSN\n';
-      employees.forEach(emp => {
-        csv += `${emp.name},${emp.address},${emp.state},${emp.ssn}\n`;
+      fetch("YOUR_WEB_APP_URL_HERE", {
+        method: "POST",
+        body: JSON.stringify({data: data}),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(response => response.text())
+      .then(msg => {
+        status.textContent = "Submitted! Check your Google Sheet.";
+        input.value = "";
+      })
+      .catch(err => {
+        status.textContent = "Error submitting data.";
+        console.error(err);
       });
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'employees.csv';
-      a.click();
-      URL.revokeObjectURL(url);
     });
   </script>
 </body>
