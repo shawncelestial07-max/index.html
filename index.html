@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Employee Tracker</h1>
+
+  <form id="employee-form">
+    <input type="text" id="fullName" placeholder="Full Name" required>
+    <input type="text" id="address" placeholder="Address" required>
+    <input type="text" id="state" placeholder="State" required>
+    <input type="text" id="ssn" placeholder="SSN" required>
+    <button type="submit">Add Employee</button>
+  </form>
+
+  <button id="download-csv">Download Excel</button>
+
+  <table id="employee-table">
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Address</th>
+        <th>State</th>
+        <th>SSN</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
