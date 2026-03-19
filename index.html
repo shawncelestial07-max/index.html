@@ -38,7 +38,7 @@
         return;
       }
 
-      // Send data to Google Apps Script Web App
+      // Replace YOUR_WEB_APP_URL_HERE with your deployed Google Apps Script Web App URL
       fetch("YOUR_WEB_APP_URL_HERE", {
         method: "POST",
         body: JSON.stringify({ data: data }),
@@ -56,7 +56,7 @@
         }
       })
       .catch(err => {
-        error.textContent = "Error submitting data. Check your Web App URL.";
+        error.textContent = "Error submitting data. Check your Web App URL and deployment.";
         status.textContent = "";
         console.error(err);
       });
