@@ -4,16 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Tracker</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input { padding: 8px; width: 400px; margin-right: 10px; }
+    button { padding: 8px 12px; }
+    table { margin-top: 20px; width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+  </style>
 </head>
 <body>
   <h1>Employee Tracker</h1>
 
+  <!-- Single input for all employee info -->
   <form id="employee-form">
-    <input type="text" id="fullName" placeholder="Full Name" required>
-    <input type="text" id="address" placeholder="Address" required>
-    <input type="text" id="state" placeholder="State" required>
-    <input type="text" id="ssn" placeholder="SSN" required>
+    <input type="text" id="employeeData" placeholder="Paste employee info: Name, Address, State, SSN" required>
     <button type="submit">Add Employee</button>
   </form>
 
@@ -31,9 +36,67 @@
     <tbody></tbody>
   </table>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const form = document.getElementById('employee-form');
+    const employeeInput = document.getElementById('employeeData');
+    const tableBody = document.querySelector('#employee-table tbody');
+    const downloadBtn = document.getElementById('download-csv');
+
+    let employees = [];
+
+    // Add employee
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = employeeInput.value.trim().split(','); // split by comma
+      if (data.length !== 4) {
+        alert('Please enter all 4 fields: Name, Address, State, SSN');
+        return;
+      }
+
+      const employee = {
+        name: data[0].trim(),
+        address: data[1].trim(),
+        state: data[2].trim(),
+        ssn: data[3].trim()
+      };
+
+      employees.push(employee);
+      addRow(employee);
+      employeeInput.value = '';
+    });
+
+    // Add a row to the table
+    function addRow(emp) {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${emp.name}</td>
+        <td>${emp.address}</td>
+        <td>${emp.state}</td>
+        <td>${emp.ssn}</td>
+      `;
+      tableBody.appendChild(row);
+    }
+
+    // Download as CSV (Excel-compatible)
+    downloadBtn.addEventListener('click', () => {
+      if (employees.length === 0) {
+        alert('No employee data to download!');
+        return;
+      }
+
+      let csv = 'Full Name,Address,State,SSN\n';
+      employees.forEach(emp => {
+        csv += `${emp.name},${emp.address},${emp.state},${emp.ssn}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'employees.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
 </body>
 </html>
