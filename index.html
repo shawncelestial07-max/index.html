@@ -8,41 +8,56 @@
     body { font-family: Arial, sans-serif; padding: 20px; }
     input { padding: 8px; width: 400px; margin-right: 10px; }
     button { padding: 8px 12px; }
-    #status { margin-top: 10px; font-weight: bold; }
+    #status { margin-top: 10px; font-weight: bold; color: green; }
+    #error { margin-top: 10px; font-weight: bold; color: red; }
   </style>
 </head>
 <body>
   <h1>Employee Tracker</h1>
 
+  <!-- Single input for all employee info -->
   <form id="employee-form">
     <input type="text" id="employeeData" placeholder="Paste info: Name, Address, State, SSN" required>
     <button type="submit">Add Employee</button>
   </form>
 
   <div id="status"></div>
+  <div id="error"></div>
 
   <script>
     const form = document.getElementById('employee-form');
     const input = document.getElementById('employeeData');
     const status = document.getElementById('status');
+    const error = document.getElementById('error');
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
       const data = input.value.trim();
-      if(!data) return;
+      if(!data){
+        error.textContent = "Please enter employee info.";
+        return;
+      }
 
+      // Send data to Google Apps Script Web App
       fetch("YOUR_WEB_APP_URL_HERE", {
         method: "POST",
-        body: JSON.stringify({data: data}),
+        body: JSON.stringify({ data: data }),
         headers: { "Content-Type": "application/json" }
       })
       .then(response => response.text())
       .then(msg => {
-        status.textContent = "Submitted! Check your Google Sheet.";
-        input.value = "";
+        if(msg.includes("Success")){
+          status.textContent = "Employee added successfully! Check your Google Sheet.";
+          error.textContent = "";
+          input.value = "";
+        } else {
+          error.textContent = msg;
+          status.textContent = "";
+        }
       })
       .catch(err => {
-        status.textContent = "Error submitting data.";
+        error.textContent = "Error submitting data. Check your Web App URL.";
+        status.textContent = "";
         console.error(err);
       });
     });
